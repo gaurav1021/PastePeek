@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paste Analyzer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        #pasteArea {
+            border: 2px dashed #aaa;
+            padding: 20px;
+            min-height: 150px;
+            margin-bottom: 20px;
+            background: #f9f9f9;
+            width: 50vw;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tab {
+            margin-top: 20px;
+            width: 30vw;
+        }
+
+        .tabs-cont {
+            display: flex-block;
+            margin: 20px;
+            margin-top: 100px;
+            padding: 20px;
+        }
+
+        .cont {
+            display: flex;
+            width: 90vw;
+        }
+
+        .inpt {
+            margin: 20px;
+            padding: 20px;
+        }
+
+        .paste-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin:10px;
+        }
+
+        #linksList,
+        #imagesList,
+        #formattedText,
+        #cleanText {
+            height: 300px;
+            /*            width:200px;*/
+            overflow: scroll;
+        }
+
+        #pasteArea {
+            height: 70vh;
+            overflow: scroll;
+        }
+
+        h2 {
+            background-color: bisque;
+            padding: 5px;
+            padding-left: 15px;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: black;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        header {
+            background-color: black;
+            color: white;
+        }
+
+        .hding {
+            font-size: 100px;
+            /* align-items:center;     */
+            text-align: center;
+            width: 100%;
+        }
+
+        @media only screen and (max-width: 500px) {
+            .hding, button, h1, h2 {
+                font-size:3vw !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="hding navbar-brand" href="#">Paste Peek</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="cont">
+
+        <div class="inpt">
+            <span class="paste-head">
+                <h1>Paste Your Content</h1>
+                <button id="processBtn">Process Content</button>
+            </span>
+            <div id="pasteArea" contenteditable="true">Paste here...</div>
+        </div>
+        <div class="tabs-cont">
+            <div class="tab" id="linksTab">
+                <h2>Links:</h2>
+                <ul id="linksList"></ul>
+            </div>
+
+            <div class="tab" id="imagesTab">
+                <h2>Images:</h2>
+                <div id="imagesList"></div>
+            </div>
+
+            <div class="tab" id="formattedTextTab">
+                <h2>Formatted Text:</h2>
+                <div id="formattedText"></div>
+            </div>
+
+            <div class="tab" id="cleanTextTab">
+                <span class="copy-head">
+                    <h2>Text Without Links:</h2>
+                    <button id="copyBtn">Copy Clean Content</button>
+                </span>
+                <div id="cleanText"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('processBtn').addEventListener('click', () => {
+            const pasteArea = document.getElementById('pasteArea');
+            const content = pasteArea.innerHTML; // Get full HTML content
+
+            processLinks(content);
+            processImages(content);
+            displayFormattedText(content);
+            removeLinks(content);
+        });
+
+        function processLinks(content) {
+            const linksList = document.getElementById('linksList');
+            linksList.innerHTML = '';
+
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = content;
+
+            const links = tempDiv.querySelectorAll('a');
+            links.forEach(link => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${link.href} (Text: ${link.textContent})`;
+                linksList.appendChild(listItem);
+            });
+        }
+
+        function processImages(content) {
+            const imagesList = document.getElementById('imagesList');
+            imagesList.innerHTML = '';
+
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = content;
+
+            const images = tempDiv.querySelectorAll('img');
+            images.forEach(img => {
+                const imgElement = document.createElement('img');
+                imgElement.src = img.src;
+                imgElement.style.maxWidth = '200px';
+                imgElement.style.margin = '10px';
+                imagesList.appendChild(imgElement);
+            });
+        }
+
+        function displayFormattedText(content) {
+            const formattedText = document.getElementById('formattedText');
+            formattedText.innerHTML = content;
+        }
+
+        // Remove embedded links and show plain text + images
+        function removeLinks(content) {
+            const cleanTextDiv = document.getElementById('cleanText');
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = content;
+
+            // Replace links with their text content
+            const links = tempDiv.querySelectorAll('a');
+            links.forEach(link => {
+                const textNode = document.createTextNode(link.textContent);
+                link.parentNode.replaceChild(textNode, link);
+            });
+
+            cleanTextDiv.innerHTML = tempDiv.innerHTML;
+        }
+
+        // Copy cleaned content to clipboard
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            const cleanTextDiv = document.getElementById('cleanText');
+
+            // Create a temporary element for copying
+            const tempElement = document.createElement('div');
+            tempElement.innerHTML = cleanTextDiv.innerHTML;
+            document.body.appendChild(tempElement);
+
+            // Select and copy content
+            const range = document.createRange();
+            range.selectNodeContents(tempElement);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            try {
+                document.execCommand('copy');
+                alert('Clean content copied to clipboard!');
+            } catch (err) {
+                alert('Failed to copy content.');
+            }
+
+            // Cleanup
+            document.body.removeChild(tempElement);
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
+</body>
+
+</html>
