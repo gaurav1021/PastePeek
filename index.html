@@ -52,7 +52,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin:10px;
+            margin: 10px;
         }
 
         #linksList,
@@ -88,6 +88,7 @@
         header {
             background-color: black;
             color: white;
+            width: 100vw;
         }
 
         .hding {
@@ -98,9 +99,56 @@
         }
 
         @media only screen and (max-width: 500px) {
-            .hding, button, h1, h2 {
-                font-size:3vw !important;
+
+            .hding,
+            button,
+            h1,
+            h2 {
+                font-size: 3vw !important;
             }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: white;
+            text-align: center;
+        }
+
+        /* Video background */
+        video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        /* video{
+            width:100vw;
+
+        } */
+        h1 {
+            color: black;
+        }
+
+        #formattedTextTab,
+        #cleanTextTab {
+            width: 90vw;
+        }
+
+        .copy-head {
+            background-color: bisque;
+            display: flex;
+            justify-content: space-between;
+            border-radius:5px;
         }
     </style>
 </head>
@@ -113,7 +161,10 @@
             </div>
         </nav>
     </header>
-
+    <video autoplay muted loop>
+        <source src="./vid.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
     <div class="cont">
 
         <div class="inpt">
@@ -133,20 +184,33 @@
                 <h2>Images:</h2>
                 <div id="imagesList"></div>
             </div>
-
+            <!-- 
             <div class="tab" id="formattedTextTab">
                 <h2>Formatted Text:</h2>
                 <div id="formattedText"></div>
-            </div>
+            </div> -->
 
-            <div class="tab" id="cleanTextTab">
+            <!-- <div class="tab" id="cleanTextTab">
                 <span class="copy-head">
                     <h2>Text Without Links:</h2>
                     <button id="copyBtn">Copy Clean Content</button>
                 </span>
                 <div id="cleanText"></div>
-            </div>
+            </div> -->
         </div>
+
+
+    </div>
+    <div class="tab" id="formattedTextTab">
+        <h2>Formatted Text:</h2>
+        <div id="formattedText"></div>
+    </div>
+    <div class="tab" id="cleanTextTab">
+        <span class="copy-head">
+            <h2>Text Without Links:</h2>
+            <button id="copyBtn">Copy Clean Content</button>
+        </span>
+        <div id="cleanText"></div>
     </div>
 
     <script>
